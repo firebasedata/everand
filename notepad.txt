@@ -75,26 +75,38 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #include <ai/Game.h>
 #include <ai/AI.h>
 #include <time.h>
 #include <queue>
 
-float gameMap[45][45];
-bool visited[1001][1001];
-
-const int dx[4] = { 0, 1, 0, -1 };
-const int dy[4] = { -1, 0, 1, 0 };
-
-
-const int MAP_SIZE = 45;
-int visitedNodes[MAP_SIZE][MAP_SIZE];
-struct Point {
-    int x, y;
-};
-Point parentNodes[MAP_SIZE][MAP_SIZE];
-
-
+// This function is called automatically to set your tanks on the map
+// Arrange your tanks as you wish using PlaceTank() command
+// You can only place NUMBER_OF_TANK tanks in the map
+// IMPORTANT: Remember to place all your tanks and the coordinates must be integers.
 void AI_Placement() {
     AI* ai = AI::GetInstance();
     if (ai->GetMyTeam() == TEAM_1) {
@@ -111,6 +123,20 @@ void AI_Placement() {
     }
 }
 
+
+float gameMap[45][45];
+bool visited[1001][1001];
+
+const int dx[4] = { 0, 1, 0, -1 };
+const int dy[4] = { -1, 0, 1, 0 };
+
+
+const int MAP_SIZE = 45;
+int visitedNodes[MAP_SIZE][MAP_SIZE];
+struct Point {
+    int x, y;
+};
+Point parentNodes[MAP_SIZE][MAP_SIZE];
 
 void initBFS() {
     for (int i = 0; i < MAP_SIZE; ++i) {
@@ -514,7 +540,9 @@ void updateGameMap(int coolDown, int activeTankId) {
     }
 }
 
-
+// This function is called automatically when it's your turn.
+// Remember to call AI_Move() with a valid move before the time is run out.
+// See <ai/Game.h> and <ai/AI.h> for supported APIs.
 void AI_Update() {
     AI* ai = AI::GetInstance();
 
@@ -594,5 +622,125 @@ void AI_Update() {
         }
     }
 
+	// Leave this here, don't remove it.
+	// This command will send all of your tank command to server
     Game::GetInstance()->SendCommand();
 }
+
+////////////////////////////////////////////////////////////
+//                DON'T TOUCH THIS PART                   //
+////////////////////////////////////////////////////////////
+
+int main(int argc, char* argv[])
+{
+    srand(clock());
+
+#ifdef _WIN32
+    INT rc;
+    WSADATA wsaData;
+
+    rc = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (rc) {
+        printf("WSAStartup Failed.\n");
+        return 1;
+    }
+#endif
+
+    Game::CreateInstance();
+    Game* p_Game = Game::GetInstance();
+
+    // Create connection
+    if (p_Game->Connect(argc, argv) == -1)
+    {
+        LOG("Failed to connect to server!\n");
+        return -1;
+    }
+
+    // Set up function pointers
+    AI::GetInstance()->PlaceTank = &AI_Placement;
+    AI::GetInstance()->Update = &AI_Update;
+
+    // Polling every 100ms until the connection is dead
+    p_Game->PollingFromServer();
+
+    Game::DestroyInstance();
+
+#ifdef _WIN32
+    WSACleanup();
+#endif
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
