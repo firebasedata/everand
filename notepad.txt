@@ -621,8 +621,8 @@ void AI_Update() {
         }
     }
 
-	// Leave this here, don't remove it.
-	// This command will send all of your tank command to server
+    // Leave this here, don't remove it.
+    // This command will send all of your tank command to server
     Game::GetInstance()->SendCommand();
 }
 
