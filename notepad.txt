@@ -154,7 +154,6 @@ float roundToHalf(float n) {
 
 
 int findPathDirection(Point start, int targetType1, int targetType2, int blockMin, int blockMax) {
-    // Special case: Check if we can shoot directly at enemy
     if (gameMap[start.x][start.y] == -10) {
         for (int i = 0; i < 4; i++) {
             int distance = 1;
